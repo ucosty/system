@@ -1,0 +1,5 @@
+.DS_Store
+*.o
+kernel.elf
+kernel.map
+*.iso
