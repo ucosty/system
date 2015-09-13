@@ -14,11 +14,11 @@ void platform_init(uint32_t multiboot __attribute__ ((unused)), uint32_t multibo
 		while(1);
 	}
 
-	// Let's begin loading the kernel
+	// Ensure the first 2GB of memory is mapped to the top 2GB of virtual address space
 	bootstrap_paging();
 
-	video[0] = ('P' | 0x3F << 8);
-	video[1] = ('!' | 0x3F << 8);
+	// Bootstrap the frame allocator
+	
 
 	// We can't go home
 	while(1);

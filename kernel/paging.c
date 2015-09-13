@@ -3,7 +3,6 @@
 
 extern uint64_t InitialPML4;
 extern uint64_t InitialPDPT;
-extern uint64_t InitialPD;
 
 static inline void flush_tlb() {
 	uint64_t cr3;
@@ -16,9 +15,16 @@ static inline void flush_tlb_single(uint64_t address) {
 }
 
 void bootstrap_paging() {
-	// Let's map the first nGB of memory using oversized pages	
+	uint64_t *pdpt = (uint64_t *)(kernel_base + ((uint64_t)&InitialPDPT));
+
+	// Unmap the lower 2GB memory mapping
 	uint64_t *pml4 = (uint64_t *) ((kernel_base + InitialPML4) & 0xFFFFFFFFFFFFFF00);
 	pml4[0] = 0;
+
+	// Unmap the lower 1GB PDPT mapping
+	pdpt[0] = 0;
+
+	// Flush the TLB
 	flush_tlb();
 }
 

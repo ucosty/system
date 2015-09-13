@@ -124,25 +124,20 @@ PSE_Test:
     // Configure the Page Directory Pointer Table
     // ------------------------------------------
     lea InitialPDPT, %eax
-    lea InitialPD,   %ebx
+    xor %ebx, %ebx
     xor %ecx, %ecx
     
     // Load the Page Directory address to PDPT Entry 0
-    or $0x03, %ebx
+    or $0x83, %ebx
     mov %ebx, (%eax, %ecx, 8)
 
-    // Load the Page Directory address to PDPT Entry 510 (-2GB position)
+    // Load the fist gigabyte of memory to PDPT Entry 510 (-2GB position)
     mov $0x1FE, %ecx
     mov %ebx, (%eax, %ecx, 8)
-    
-    // ----------------------------
-    // Configure the Page Directory
-    // ----------------------------
-    lea InitialPD, %eax
-    xor %ecx, %ecx
-    
-    // Map the first 2MB using 2MB page
-    mov $0x83, %ebx
+
+    // Load the second gigabye of memory to PDPT Entry 511 (-1GB position) 
+    inc %ecx
+    add $0x40000000, %ebx
     mov %ebx, (%eax, %ecx, 8)
 
     // We have now determined that the Multiboot magic number is valid,
@@ -272,14 +267,6 @@ InitialPML4:
 .global InitialPDPT
 InitialPDPT:
 	# Ensure the PDPT (Page Directory Pointer Table) is empty 
-	.rept   512
-	.long   0
-	.long   0
-	.endr
-
-.global InitialPD
-InitialPD:
-	# Ensure the PD (Page Directory) is empty 
 	.rept   512
 	.long   0
 	.long   0
